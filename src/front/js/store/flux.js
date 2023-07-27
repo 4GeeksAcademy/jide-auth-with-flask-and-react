@@ -1,6 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
+			token: null,
 			message: null,
 			demo: [
 				{
@@ -19,6 +20,46 @@ const getState = ({ getStore, getActions, setStore }) => {
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
+			},
+
+			syncTokenFromSessionStore: () => {
+				const token = sessionStorage.getItem("token");
+				console.log("Application just loaded, syncing the session storage token")
+				if(token && token !="" && token != undefined) setStore({ token: token});
+			},
+
+			logout: () => {
+				sessionStorage.removeItem("token");
+				console.log("Logging out")
+				setStore({ token: null });
+			},
+
+			login: async (email, password) => {
+				const opts = {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						"email": email,
+						"password": password
+					})
+				}
+				try{
+					const resp = await fetch('https://jide-muritala-crispy-doodle-gj9975q4q4wf9r76-3001.preview.app.github.dev/api/token', opts)
+					if(resp.status !== 200) {
+						alert("There has been some error");
+						return false;
+					}
+					const data = await resp.json();
+					console.log("this came from the backend", data);
+					sessionStorage.setItem("token", data.access_token);
+					setStore({ token: data.access_token})
+					return true;
+				}
+				catch(error){
+					console.error("There has been an error logging in")
+				}
 			},
 
 			getMessage: async () => {

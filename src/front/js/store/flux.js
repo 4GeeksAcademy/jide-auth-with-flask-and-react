@@ -70,7 +70,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 				};
 				// fetching data from the backend
-				fetch(process.env.BACKEND_URL + "/api/hello", opts)
+				fetch("https://jide-muritala-crispy-doodle-gj9975q4q4wf9r76-3001.preview.app.github.dev/api/hello", opts)
 					.then(resp => resp.json())
 					.then(data => setStore({ message: data.message }))
 					.catch(error => console.log("Error loading message from backend", error));

@@ -17,11 +17,15 @@ api = Blueprint('api', __name__)
 def create_token():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    if email != "test" or password != "test":
+    # Query your database for email and password
+    user = User.query.filter_by(email=email, password=password).first()
+    if user is None:
+        # the user was not found on the database
         return jsonify({"msg": "Bad email or password"}), 401
-
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    
+    # create a new token with the user id inside
+    access_token = create_access_token(identity=user.id)
+    return jsonify({ "token": access_token, "user_id": user.id })
 
 @api.route("/hello", methods=["GET"])
 @jwt_required()
@@ -32,3 +36,20 @@ def get_hello():
     }
     
     return jsonify(dictionary)
+
+@api.route('/signup', methods=['POST'])
+def create_user():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    if not email or not password:
+        return jsonify({ "msg": "No password or email present" }), 400
+    
+    new_user = User(email=email, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    response_body = {
+        "msg": "User created"
+    }
+    return jsonify(response_body), 201

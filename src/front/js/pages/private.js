@@ -21,7 +21,9 @@ export const Private = () => {
 
     return (
         <>
-            {user !== null ? `hello ${user.email}` : <></> }
+           <p>
+            Hello World!
+           </p>
 
         </>
 

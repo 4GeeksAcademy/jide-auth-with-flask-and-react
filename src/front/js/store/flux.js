@@ -1,3 +1,5 @@
+import { Navigate } from "react-router-dom";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -54,7 +56,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					const data = await resp.json();
 					console.log("this came from the backend", data);
 					sessionStorage.setItem("token", data.access_token);
-					setStore({ token: data.access_token})
+					setStore({ token: data.access_token});
+					navigate("/private")
 					return true;
 				}
 				catch(error){
